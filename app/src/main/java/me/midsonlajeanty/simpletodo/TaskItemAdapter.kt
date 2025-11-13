@@ -6,14 +6,20 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class TaskItemAdapter(private val listOfItems: List<String>, val longClickListener: OnLongClickListener)
-    : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>(){
+class TaskItemAdapter(
+    private val listOfItems: List<String>,
+    val longClickListener: OnLongClickListener
+) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val context = parent.context
-        val inflater = LayoutInflater.from(context)
-        val taskView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false)
-        return ViewHolder(taskView)
+        return ViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(
+                    android.R.layout.simple_list_item_1,
+                    parent,
+                    false
+                )
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
