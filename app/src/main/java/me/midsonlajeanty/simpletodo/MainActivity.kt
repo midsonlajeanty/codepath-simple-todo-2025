@@ -2,9 +2,11 @@ package me.midsonlajeanty.simpletodo
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import org.apache.commons.io.FileUtils
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -22,11 +24,18 @@ class MainActivity : AppCompatActivity() {
     var listOfTasks = mutableListOf<String>()
 
     lateinit var adapter : TaskItemAdapter
+    lateinit var tasksRecyclerView: RecyclerView
+    lateinit var emptyRecyclerView: ImageView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        tasksRecyclerView = findViewById(R.id.tasksRecyclerView)
+        emptyRecyclerView = findViewById(R.id.emptyRecyclerView)
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -47,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                     .setPositiveButton(getString(R.string.yes)) { _, _ ->
                         listOfTasks.removeAt(position)
                         adapter.notifyDataSetChanged()
+                        checkEmptyState()
                         saveFile()
                     }
                     .show()
@@ -54,11 +64,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadFile()
+        checkEmptyState()
 
-        val listOfTasksView = findViewById<RecyclerView>(R.id.tasksRecyclerView)
         adapter = TaskItemAdapter(listOfTasks, onLongClickListener)
-        listOfTasksView.adapter = adapter
-        listOfTasksView.layoutManager = LinearLayoutManager(this)
+        tasksRecyclerView.adapter = adapter
+        tasksRecyclerView.layoutManager = LinearLayoutManager(this)
 
         val btn = findViewById<Button>(R.id.addButton)
         val addTextEdit = findViewById<EditText>(R.id.addTaskField)
@@ -70,8 +80,19 @@ class MainActivity : AppCompatActivity() {
                 listOfTasks.add(userInput)
                 adapter.notifyItemInserted(listOfTasks.size - 1)
                 addTextEdit.setText("")
+                checkEmptyState()
                 saveFile()
             }
+        }
+    }
+
+    private fun checkEmptyState () {
+        if (listOfTasks.isEmpty()) {
+            tasksRecyclerView.visibility = View.GONE
+            emptyRecyclerView.visibility = View.VISIBLE
+        } else {
+            tasksRecyclerView.visibility = View.VISIBLE
+            emptyRecyclerView.visibility = View.GONE
         }
     }
 
